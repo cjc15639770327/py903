@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>列表</title>
+</head>
+<body>
+    <h2>这里是列表页</h2>
+    <ul>
+        {% for b in books %}
+        <li><a href="/booktest/detail/{{ b.id }}/">{{ b.title }}</a></li>
+        {% endfor %}
+    </ul>
+    <a href="/booktest/index/">返回首页</a>
+
+</body>
+</html>
