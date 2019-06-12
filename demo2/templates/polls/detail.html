@@ -1,15 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>投票页面</title>
-</head>
-<body>
+{% extends 'polls/base.html' %}
+{% block title %}
+投票页面
+{% endblock %}
+
+{% block body %}
+
     <h2>请投票</h2>
     <h3>{{ question.title }}</h3>
 
     <ul>
-        <form action="{% url 'polls:detail' question.id %}">
+        <form action="{% url 'polls:detail' question.id %}" method="post">
+            {% csrf_token %}
             {% for c in question.choice_set.all %}
 
             {% if forloop.counter == 1 %}
@@ -26,6 +27,6 @@
             <input type="submit" value="投票">
         </form>
     </ul>
+<a href="{% url 'polls:index' %}">返回首页</a>
+{% endblock %}
 
-</body>
-</html>
