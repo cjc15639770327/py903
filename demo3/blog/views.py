@@ -6,6 +6,8 @@ from comments.models import Comment
 from django.core.paginator import Paginator
 import markdown
 from django.http import HttpResponse
+from django.core.mail import send_mail,EmailMultiAlternatives
+from demo3 import settings
 # Create your views here.
 class IndexView(View):
     """
@@ -112,15 +114,41 @@ class TagView(View):
     def get(self,req,id):
         tag=get_object_or_404(Tag,pk=id)
         articles=tag.article_set.all()
-        paginator=Paginator(articles,1)
-        pagenum=req.GET.get("page")
-        pagenum= 1 if pagenum==None else pagenum
-        page=paginator.get_page(pagenum)
-        page.path="/tags/%s/"%(id,)
+        page=getpageinfo(req,articles,1,"/tags/%s/"%(id,))
+        # paginator=Paginator(articles,1)
+        # pagenum=req.GET.get("page")
+        # pagenum= 1 if pagenum==None else pagenum
+        # page=paginator.get_page(pagenum)
+        # page.path="/tags/%s/"%(id,)
         return render(req, "blog/index.html", locals())
 
 
+class ContactView(View):
+    def get(self,req):
+        return render(req,"blog/contact.html")
 
 
+    def post(self,req):
+        email=req.POST.get("email")
+        message=req.POST.get("message")
+
+        info=MessageInfo()
+        info.email=email
+        info.info=message
+        info.save()
 
 
+        return HttpResponse("提交成功")
+
+class SendMailView(View):
+    def get(self,req):
+        "发送邮件"
+
+        try:
+            mail=EmailMultiAlternatives(subject="测试邮件html格式",body="<h1><a href='http://www.baidu.com'>百度</a></h1>",from_email=settings.DEFAULT_FROM_EMAIL,to=["15639770327@163.com"])
+            mail.content_subtype="html"
+            mail.send()
+            # send_mail("测试邮件", "<h1><a herf='http://www.baidu.com'>百度</a></h1>", settings.DEFAULT_FROM_EMAIL, ["15639770327@163.com"])
+            return HttpResponse("发送成功")
+        except:
+            return HttpResponse("发送失败")
